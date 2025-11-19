@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Car Owners - Parkit4U</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="car-owner.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="Parkit4U Logo"> Parkit4U</a>
+      </div>
+
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="howitworks.html">How It Works</a></li>
+          <li><a href="car-owners.html" class="active">For Car Owners</a></li>
+          <li><a href="landowner.html">For Landowners</a></li>
+          <li><a href="subscription.html">Subscription Plans</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <a href="#" class="cta-btn">Get Started</a>
+        <a href="login.html" class="login-btn">Log In</a>
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section 
+    class="car-owner-hero hero "
+    style="
+      background-image: url('private-parking-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      height: 85vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    "
+  >
+    <div class="overlay"></div>
+
+    <div class="hero-content ">
+      <h1>Find Private House Parking Near You</h1>
+      <p>Access secure, verified residential parking spots — book instantly and park with confidence.</p>
+
+      <div class="search-bar">
+        <button type ="button" onclick="getUserLocation()" class="cta-btn">
+          <i class="fas fa-location-arrow"></i> Use My Location
+        </button>
+
+        <input type="text" placeholder="Enter area, street, or landmark..." />
+        <select>
+          <option>Select City</option>
+          <option>Mumbai</option>
+          <option>Delhi</option>
+          <option>Bangalore</option>
+          <option>Pune</option>
+        </select>
+        <button class="cta-btn"><i class="fas fa-search"></i> Find Parking</button>
+        <!-- <button class="add-btn"><i class="fas fa-plus"></i> Add My Parking</button> -->
+      </div> <p id="loc-status" style="margin-top:10px; color:#f39c12;"></p>
+
+    </div>
+  </section>
+
+  <!-- Private House Parking Listings -->
+  <section class="parking-section">
+    <div class="parking-container">
+      <h2>Nearby Private House Parkings</h2>
+      <p class="section-subtitle">Verified local homeowners offering secure spaces for rent</p>
+
+      <div class="parking-grid">
+
+        <div class="parking-card fade-in">
+          <img src="house1.jpg" alt="Private House Parking">
+          <h3>Mr. Sharma’s Driveway</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Andheri West, Mumbai</p>
+          <p class="price">₹60 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.2s;">
+          <img src="house2.jpg" alt="Private Parking">
+          <h3>Green Villa Residence</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Koramangala, Bangalore</p>
+          <p class="price">₹50 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.4s;">
+          <img src="house3.jpg" alt="Private Parking">
+          <h3>Verma House Parking</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Vasant Kunj, Delhi</p>
+          <p class="price">₹45 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.6s;">
+          <img src="house4.jpg" alt="Private Parking">
+          <h3>Rosewood Bungalow</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Baner, Pune</p>
+          <p class="price">₹55 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Parkit4U. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+  // Smooth fade-in for cards
+  document.addEventListener("DOMContentLoaded", () => {
+    const cards = document.querySelectorAll('.parking-card');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), i * 200);
+    });
+  });
+  </script>
+<script>
+async function reverseGeocode(lat, lon) {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Reverse geocoding failed");
+  const data = await res.json();
+  return data;
+}
+
+function getUserLocation() {
+  const status = document.getElementById("loc-status");
+  status.textContent = "📡 Detecting your location...";
+
+  if (!navigator.geolocation) {
+    status.textContent = "❌ Geolocation not supported on this browser.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      status.textContent = `✅ Coordinates: ${lat.toFixed(5)}, ${lon.toFixed(5)}. Fetching area name...`;
+
+      try {
+        const data = await reverseGeocode(lat, lon);
+        const searchInput = document.querySelector(".search-bar input");
+
+        if (data && data.address && searchInput) {
+          const a = data.address;
+          const niceText =
+            a.road || a.neighbourhood || a.suburb || a.city || a.town || a.village || data.display_name;
+
+          searchInput.value = niceText;
+          status.textContent = `✅ Location detected: ${niceText}. You can adjust if needed.`;
+        } else {
+          status.textContent = "ℹ️ Coordinates found, but couldn't resolve address.";
+        }
+      } catch (e) {
+        console.error(e);
+        status.textContent = "⚠️ Got coordinates, but reverse geocoding failed.";
+      }
+    },
+    (err) => {
+      status.textContent = "❌ " + err.message;
+    }
+  );
+}
+</script>
+
+
+
+</body>
+</html>
