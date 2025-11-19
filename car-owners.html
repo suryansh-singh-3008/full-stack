@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Car Owners - Parkit4U</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="car-owner.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="Parkit4U Logo"> Parkit4U</a>
+      </div>
+
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="howitworks.html">How It Works</a></li>
+          <li><a href="car-owners.html" class="active">For Car Owners</a></li>
+          <li><a href="landowner.html">For Landowners</a></li>
+          <li><a href="subscription.html">Subscription Plans</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <a href="#" class="cta-btn">Get Started</a>
+        <a href="login.html" class="login-btn">Log In</a>
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section 
+    class="car-owner-hero hero "
+    style="
+      background-image: url('private-parking-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      height: 85vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    "
+  >
+    <div class="overlay"></div>
+
+    <div class="hero-content ">
+      <h1>Find Private House Parking Near You</h1>
+      <p>Access secure, verified residential parking spots — book instantly and park with confidence.</p>
+
+      <div class="search-bar">
+  <input type="text" placeholder="Enter area, street, or landmark..." />
+  <select>
+    <option>Select City</option>
+    <option>Mumbai</option>
+    <option>Delhi</option>
+    <option>Bangalore</option>
+    <option>Pune</option>
+  </select>
+
+  <button type="button" class="cta-btn" onclick="getUserLocation()">
+    <i class="fas fa-location-arrow"></i> Use My Location
+  </button>
+
+  <button class="cta-btn">
+    <i class="fas fa-search"></i> Find Parking
+  </button>
+</div>
+ <p id="loc-status" style="margin-top:10px; color:#f39c12;"></p>
+
+    </div>
+  </section>
+  <section class="map-section">
+  <div class="parking-container">
+    <h2>Your Location on Map</h2>
+    <p class="section-subtitle">We’ll use this to find nearby private house parkings.</p>
+    <div id="user-map"></div>
+    <p id="loc-status" style="margin-top:10px; color:#f39c12;"></p>
+  </div>
+  </section>
+
+
+  <!-- Private House Parking Listings -->
+  <section class="parking-section">
+    <div class="parking-container">
+      <h2>Nearby Private House Parkings</h2>
+      <p class="section-subtitle">Verified local homeowners offering secure spaces for rent</p>
+
+      <div class="parking-grid">
+
+        <div class="parking-card fade-in">
+          <img src="house1.jpg" alt="Private House Parking">
+          <h3>Mr. Sharma’s Driveway</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Andheri West, Mumbai</p>
+          <p class="price">₹60 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.2s;">
+          <img src="house2.jpg" alt="Private Parking">
+          <h3>Green Villa Residence</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Koramangala, Bangalore</p>
+          <p class="price">₹50 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.4s;">
+          <img src="house3.jpg" alt="Private Parking">
+          <h3>Verma House Parking</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Vasant Kunj, Delhi</p>
+          <p class="price">₹45 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+        <div class="parking-card fade-in" style="animation-delay: 0.6s;">
+          <img src="house4.jpg" alt="Private Parking">
+          <h3>Rosewood Bungalow</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Baner, Pune</p>
+          <p class="price">₹55 / hour</p>
+          <button class="book-btn">Book Now</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Parkit4U. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+  // Smooth fade-in for cards
+  document.addEventListener("DOMContentLoaded", () => {
+    const cards = document.querySelectorAll('.parking-card');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), i * 200);
+    });
+  });
+  </script>
+  <script>
+  let map, userMarker, accuracyCircle;
+
+  // Initialize map when DOM is ready
+  document.addEventListener("DOMContentLoaded", () => {
+    const mapEl = document.getElementById("user-map");
+    if (!mapEl) return;
+
+    // Default center: Bengaluru
+    map = L.map("user-map").setView([12.9716, 77.5946], 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+  });
+
+  async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Reverse geocoding failed");
+    const data = await res.json();
+    return data;
+  }
+
+  function getUserLocation() {
+    const status = document.getElementById("loc-status");
+    status.textContent = "📡 Detecting your location...";
+
+    if (!navigator.geolocation) {
+      status.textContent = "❌ Geolocation not supported on this browser.";
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        status.textContent =
+          `✅ Coordinates found: ${lat.toFixed(5)}, ${lon.toFixed(5)} — getting address...`;
+
+        // Center map + add marker + accuracy circle
+        if (map) {
+          map.setView([lat, lon], 16);
+
+          if (!userMarker) {
+            userMarker = L.marker([lat, lon]).addTo(map);
+          } else {
+            userMarker.setLatLng([lat, lon]);
+          }
+
+          if (accuracyCircle) {
+            map.removeLayer(accuracyCircle);
+          }
+          accuracyCircle = L.circle([lat, lon], {
+            radius: pos.coords.accuracy,
+          }).addTo(map);
+        }
+
+        try {
+          const data = await reverseGeocode(lat, lon);
+          const searchInput = document.querySelector(".search-bar input");
+
+          let niceText = "";
+          if (data && data.address) {
+            const a = data.address;
+            niceText =
+              a.road ||
+              a.neighbourhood ||
+              a.suburb ||
+              a.city ||
+              a.town ||
+              a.village ||
+              data.display_name;
+          } else if (data && data.display_name) {
+            niceText = data.display_name;
+          }
+
+          if (searchInput && niceText) {
+            searchInput.value = niceText;
+          }
+
+          if (userMarker && niceText) {
+            userMarker.bindPopup(niceText).openPopup();
+          }
+
+          status.textContent =
+            niceText
+              ? `✅ Location detected: ${niceText}. You can adjust if it's slightly off.`
+              : "ℹ️ Coordinates set, but exact address could not be resolved.";
+        } catch (err) {
+          console.error(err);
+          status.textContent =
+            "⚠️ Got coordinates, but failed to fetch address (reverse geocoding).";
+        }
+      },
+      (err) => {
+        document.getElementById("loc-status").textContent = "❌ " + err.message;
+      }
+    );
+  }
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</body>
+</html>
